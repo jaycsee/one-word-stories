@@ -72,5 +72,3 @@ function createRandomStarter(type) {
     }
     return spicyRandomStarter();  
 }
-
-console.log(createRandomStarter('generic'));
