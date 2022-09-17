@@ -1,22 +1,11 @@
 import { Box, TextField } from "@mui/material";
 import React, { useState } from "react";
 
+import generate from "./Cohere"
+
 function App() {
   const [story, setStory] = useState("");
 
-  console.log(
-    fetch("https://api.cohere.ai/generate", {
-      method: "POST",
-      headers: {
-        Authorization: "BEARER ",
-        "Content-Type": "application/json",
-        "Cohere-Version": "2021-11-08",
-      },
-      body: JSON.stringify({
-        prompt: "Once upon a time in a magical land called",
-      }),
-    })
-  );
 
   return (
     <Box
@@ -34,7 +23,7 @@ function App() {
           multiline
           placeholder="Start your story here"
           value={story}
-          onChange={(event) => setStory(event.target.value)}
+          onChange={async (event) => { setStory(event.target.value); console.log(await generate(event.target.value)); }}
           sx={{ maxHeight: "100%" }}
           rows={30}
         />
