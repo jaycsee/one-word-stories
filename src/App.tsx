@@ -23,6 +23,8 @@ function App() {
   const [words, setWords] = useState(1);
   const resetStory = () => setStory("");
 
+  const [apiKey, setApiKey] = useState("")
+
   return (
     <Box
       display="flex"
@@ -33,7 +35,7 @@ function App() {
         <h1>one word stories</h1>
       </Box>
       <Box sx={{ width: "40rem", pt: 1, px: 3 }}>
-        <TextField fullWidth placeholder="API Key" size="small" />
+        <TextField fullWidth placeholder="API Key" size="small" value={apiKey} onChange={(event) => setApiKey(event?.target.value ?? "")} />
       </Box>
       <Stack spacing={2} direction="row">
         <Settings words={words} setWords={setWords} />
@@ -66,7 +68,7 @@ function App() {
               numWords(lockedString) + words == numWords(newValue)
             ) {
               setPaused(true);
-              const generated = await generate(newValue.trim(), words + 5);
+              const generated = await generate(newValue.trim(), apiKey, words + 5);
               let newStory = story;
               let alpha = false;
               let processed = 0;
