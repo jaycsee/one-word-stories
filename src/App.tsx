@@ -1,6 +1,6 @@
-import { Box, TextField, Stack } from "@mui/material";
+import { Box, TextField } from "@mui/material";
 import { useState } from "react";
-import Settings, { ResetButton, InspirationButton } from "./Settings";
+import Settings, { InspirationButton, ResetButton } from "./Settings";
 
 import generate from "./Cohere";
 import createRandomStarter from "./randomStarter";
@@ -16,6 +16,10 @@ function App() {
     setLockedString("");
   };
 
+  const [apiKey, setApiKey] = useState(
+    localStorage.getItem("cohereAPIKey") ?? ""
+  );
+
   return (
     <Box
       display="flex"
@@ -26,7 +30,16 @@ function App() {
         <h1>one word stories</h1>
       </Box>
       <Box sx={{ width: "25rem", pt: 1, px: 3 }}>
-        <TextField fullWidth placeholder="API Key" size="small" />
+        <TextField
+          fullWidth
+          placeholder="API Key"
+          size="small"
+          value={apiKey}
+          onChange={(event) => {
+            setApiKey(event?.target.value ?? "");
+            localStorage.setItem("cohereAPIKey", event.target.value);
+          }}
+        />
       </Box>
       <Box
         display="flex"
@@ -54,19 +67,34 @@ function App() {
             if (paused) return;
             const newValue = event.target.value;
             if (!newValue.startsWith(lockedString)) return;
+
+            if (lockedString === "") setLockedString(story);
+
+            const numWords = (s: string) => {
+              let ans = 0;
+              for (const p of s.trim().split(" ")) if (p !== "") ans++;
+              return ans;
+            };
+
             setStory(newValue);
             if (
               newValue.endsWith(" ") &&
-              newValue.length !== lockedString.length
+              numWords(lockedString) + words === numWords(newValue)
             ) {
               setPaused(true);
-              const generated = await generate(newValue.trim());
+              const generated = await generate(
+                newValue.trim(),
+                apiKey,
+                words + 5
+              );
               let newStory = story;
               let alpha = false;
+              let processed = 0;
               for (const c of generated) {
                 if (c.match(/[a-zA-Z]/)) alpha = true;
                 newStory += c;
-                if (alpha && c.match(/\s/)) break;
+                if (alpha && c.match(/\s/)) processed++;
+                if (processed === words) break;
               }
               setLockedString(newStory);
               console.log(generated);

@@ -1,13 +1,4 @@
-import {
-  Box,
-  TextField,
-  Button,
-  styled,
-  Slider,
-  Typography,
-  Grid,
-  Stack,
-} from "@mui/material";
+import { Box, Button, Grid, Slider, styled, Typography } from "@mui/material";
 import MuiInput from "@mui/material/Input";
 
 export function ResetButton(props: { onClick: () => void }) {
@@ -18,8 +9,8 @@ export function ResetButton(props: { onClick: () => void }) {
   );
 }
 
-export function InspirationButton(props: { onClick: () => void }) {
-  return <Button color="secondary">I need inspiration</Button>;
+export function InspirationButton(props: any) {
+  return <Button variant="outlined">I need inspiration</Button>;
 }
 
 interface SettingsProps {
