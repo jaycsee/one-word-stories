@@ -1,4 +1,10 @@
-import { Box, TextField } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Stack,
+  FormControlLabel,
+  Switch,
+} from "@mui/material";
 import { useState } from "react";
 import Settings, { InspirationButton, ResetButton } from "./Settings";
 
@@ -12,13 +18,17 @@ function App() {
 
   const [words, setWords] = useState(1);
   const resetStory = () => {
-    setStory(createRandomStarter("spicy"));
+    if (spicy) {
+      setStory(createRandomStarter("spicy"));
+    } else setStory(createRandomStarter("generic"))
     setLockedString("");
   };
 
   const [apiKey, setApiKey] = useState(
     localStorage.getItem("cohereAPIKey") ?? ""
   );
+
+  const [spicy, setSpicy] = useState(true)
 
   return (
     <Box
@@ -51,10 +61,26 @@ function App() {
           <Settings words={words} setWords={setWords} />
         </Box>
         <Box sx={{ mx: 1 }}>
+          <FormControlLabel
+            sx={{
+              display: 'block',
+            }}
+            control={
+              <Switch
+                checked={spicy}
+                onChange={() => setSpicy(!spicy)}
+                name="loading"
+                color="primary"
+              />
+            }
+            label="Spicy"
+          />
+        </Box>
+        <Box sx={{ mx: 1 }}>
           <ResetButton onClick={() => resetStory()} />
         </Box>
         <Box sx={{ mx: 1 }}>
-          <InspirationButton onClick={() => {}} />
+          <InspirationButton onClick={() => { }} />
         </Box>
       </Box>
       <Box flexGrow={1} sx={{ pt: 2, px: 3 }}>
@@ -106,7 +132,7 @@ function App() {
           rows={30}
         />
       </Box>
-    </Box>
+    </Box >
   );
 }
 
