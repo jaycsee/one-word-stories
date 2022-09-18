@@ -1,5 +1,5 @@
 
-export default async function generate(prompt: string, max_tokens?: number) {
+export default async function generate(prompt: string, max_tokens?: number, temperature?: number) {
     if (!max_tokens) max_tokens = 5;
     return (
         await fetch("https://api.cohere.ai/generate", {
@@ -11,7 +11,8 @@ export default async function generate(prompt: string, max_tokens?: number) {
             },
             body: JSON.stringify({
                 prompt,
-                max_tokens
+                max_tokens,
+                temperature
             }),
         }).then(response => response.json())
             .then(json => json.generations[0].text)

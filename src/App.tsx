@@ -7,6 +7,7 @@ import {
   Typography,
   Grid,
   Stack,
+  makeStyles,
 } from "@mui/material";
 import MuiInput from "@mui/material/Input";
 import React, { useState } from "react";
@@ -34,7 +35,11 @@ function App() {
       <Box sx={{ width: "40rem", pt: 1, px: 3 }}>
         <TextField fullWidth placeholder="API Key" size="small" />
       </Box>
-      <Settings words={words} setWords={setWords} />
+      <Stack spacing={2} direction="row">
+        <Settings words={words} setWords={setWords} />
+        <ResetButton onClick={() => resetStory()} />
+        <InspirationButton />
+      </Stack>
       <Box flexGrow={1} sx={{ pt: 2, px: 3 }}>
         <TextField
           fullWidth
@@ -45,19 +50,31 @@ function App() {
             if (paused) return;
             const newValue = event.target.value;
             if (!newValue.startsWith(lockedString)) return;
+
+            if (lockedString === "")
+              setLockedString(story)
+
+            const numWords = (s: string) => {
+              let ans = 0
+              for (const p of s.trim().split(" ")) if (p !== "") ans++
+              return ans
+            }
+
             setStory(newValue);
             if (
               newValue.endsWith(" ") &&
-              newValue.length !== lockedString.length
+              numWords(lockedString) + words == numWords(newValue)
             ) {
               setPaused(true);
-              const generated = await generate(newValue.trim());
+              const generated = await generate(newValue.trim(), words + 5);
               let newStory = story;
               let alpha = false;
+              let processed = 0;
               for (const c of generated) {
                 if (c.match(/[a-zA-Z]/)) alpha = true;
                 newStory += c;
-                if (alpha && c.match(/\s/)) break;
+                if (alpha && c.match(/\s/)) processed++;
+                if (processed === words) break;
               }
               setLockedString(newStory);
               console.log(generated);
@@ -69,10 +86,6 @@ function App() {
           rows={30}
         />
       </Box>
-      <Stack spacing={2} direction="row">
-        <ResetButton onClick={() => resetStory()} />
-        <InspirationButton />
-      </Stack>
     </Box>
   );
 }

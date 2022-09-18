@@ -23,7 +23,7 @@ export function InspirationButton(props: any) {
     //const { onClick } = props;
 
     return (
-        <Button color="secondary">I need inspiration</Button>
+        <Button variant="outlined">I need inspiration</Button>
     )
 }
 
