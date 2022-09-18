@@ -30,6 +30,73 @@ function App() {
 
   const [spicy, setSpicy] = useState(true)
 
+  const [cachedString, setCachedString] = useState("");
+
+  const numWords = (s: string) => {
+    let ans = 0;
+    for (const p of s.trim().split(" ")) if (p !== "") ans++;
+    return ans;
+  };
+
+  const needInspiration = async () => {
+    if (paused) return;
+    setPaused(true);
+
+    let newStory = lockedString;
+
+    let cache = cachedString;
+    console.log({ words, x: numWords(cachedString) })
+    if (numWords(cachedString) < words) {
+      cache += await generate(newStory.trim() + cachedString, apiKey, 2 * words + 4)
+    }
+
+    let alpha = false;
+    let processed = 0;
+    let generatedLength = 0;
+    for (const c of cache) {
+      generatedLength++;
+      if (c.match(/[a-zA-Z]/)) alpha = true;
+      newStory += c;
+      if (alpha && c.match(/\s/)) processed++;
+      if (processed === words) break;
+    }
+
+    setCachedString(cache.substring(generatedLength));
+    setLockedString(newStory);
+    setStory(newStory);
+    setPaused(false);
+
+    console.log({ newStory, x: cache.substring(generatedLength) })
+
+
+
+    // if (remainingWords > words) {
+
+    // }
+    // setPaused(true);
+    // const generated = await generate(
+    //   event?.target.value.trim(),
+    //   apiKey,
+    //   words + 5
+    // );
+    // let newStory = story;
+    // let alpha = false;
+    // let processed = 0;
+    // let generatedLength = 0;
+    // for (const c of generated) {
+    //   generatedLength++;
+    //   if (c.match(/[a-zA-Z]/)) alpha = true;
+    //   newStory += c;
+    //   if (alpha && c.match(/\s/)) processed++;
+    //   if (processed === words) break;
+    // }
+    // setCachedString(generated.substring(generatedLength - 1));
+    // console.log(generated.substring(generatedLength - 1));
+    // setLockedString(newStory);
+    // setStory(newStory);
+    // setPaused(false);
+  }
+
   return (
     <Box
       display="flex"
@@ -80,7 +147,7 @@ function App() {
           <ResetButton onClick={() => resetStory()} />
         </Box>
         <Box sx={{ mx: 1 }}>
-          <InspirationButton onClick={() => { }} />
+          <InspirationButton onClick={() => needInspiration()} />
         </Box>
       </Box>
       <Box flexGrow={1} sx={{ pt: 2, px: 3 }}>
@@ -96,12 +163,6 @@ function App() {
 
             if (lockedString === "") setLockedString(story);
 
-            const numWords = (s: string) => {
-              let ans = 0;
-              for (const p of s.trim().split(" ")) if (p !== "") ans++;
-              return ans;
-            };
-
             setStory(newValue);
             if (
               newValue.endsWith(" ") &&
@@ -116,14 +177,17 @@ function App() {
               let newStory = story;
               let alpha = false;
               let processed = 0;
+              let generatedLength = 0;
               for (const c of generated) {
+                generatedLength++;
                 if (c.match(/[a-zA-Z]/)) alpha = true;
                 newStory += c;
                 if (alpha && c.match(/\s/)) processed++;
                 if (processed === words) break;
               }
+              setCachedString(generated.substring(generatedLength));
+              console.log(generated.substring(generatedLength));
               setLockedString(newStory);
-              console.log(generated);
               setStory(newStory);
               setPaused(false);
             }
