@@ -28,6 +28,9 @@ function App() {
       flexDirection="column"
       sx={{ m: 0, p: 0, width: "100vw", height: "100vh" }}
     >
+      <Box>
+        <h1>one word stories</h1>
+      </Box>
       <Box sx={{ width: "40rem", pt: 1, px: 3 }}>
         <TextField fullWidth placeholder="API Key" size="small" />
       </Box>
