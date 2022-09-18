@@ -1,5 +1,16 @@
-import { Box, TextField } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Button,
+  styled,
+  Slider,
+  Typography,
+  Grid,
+  Stack,
+} from "@mui/material";
+import MuiInput from "@mui/material/Input";
 import React, { useState } from "react";
+import Settings, { ResetButton, InspirationButton } from "./Settings";
 
 import generate from "./Cohere";
 
@@ -7,6 +18,9 @@ function App() {
   const [story, setStory] = useState("Once upon a time ");
   const [paused, setPaused] = useState(false);
   const [lockedString, setLockedString] = useState("");
+
+  const [words, setWords] = useState(1);
+  const resetStory = () => setStory("");
 
   return (
     <Box
@@ -17,6 +31,7 @@ function App() {
       <Box sx={{ width: "40rem", pt: 1, px: 3 }}>
         <TextField fullWidth placeholder="API Key" size="small" />
       </Box>
+      <Settings words={words} setWords={setWords} />
       <Box flexGrow={1} sx={{ pt: 2, px: 3 }}>
         <TextField
           fullWidth
@@ -51,6 +66,10 @@ function App() {
           rows={30}
         />
       </Box>
+      <Stack spacing={2} direction="row">
+        <ResetButton onClick={() => resetStory()} />
+        <InspirationButton />
+      </Stack>
     </Box>
   );
 }
