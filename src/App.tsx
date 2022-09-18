@@ -1,11 +1,12 @@
 import { Box, TextField } from "@mui/material";
 import React, { useState } from "react";
 
-import generate from "./Cohere"
+import generate from "./Cohere";
 
 function App() {
-  const [story, setStory] = useState("");
-
+  const [story, setStory] = useState("Once upon a time ");
+  const [paused, setPaused] = useState(false);
+  const [lockedString, setLockedString] = useState("");
 
   return (
     <Box
@@ -13,7 +14,6 @@ function App() {
       flexDirection="column"
       sx={{ m: 0, p: 0, width: "100vw", height: "100vh" }}
     >
-      <Box>one word stories</Box>
       <Box sx={{ width: "40rem", pt: 1, px: 3 }}>
         <TextField fullWidth placeholder="API Key" size="small" />
       </Box>
@@ -23,7 +23,30 @@ function App() {
           multiline
           placeholder="Start your story here"
           value={story}
-          onChange={async (event) => { setStory(event.target.value); console.log(await generate(event.target.value)); }}
+          onChange={async (event) => {
+            if (paused) return;
+            const newValue = event.target.value;
+            if (!newValue.startsWith(lockedString)) return;
+            setStory(newValue);
+            if (
+              newValue.endsWith(" ") &&
+              newValue.length !== lockedString.length
+            ) {
+              setPaused(true);
+              const generated = await generate(newValue.trim());
+              let newStory = story;
+              let alpha = false;
+              for (const c of generated) {
+                if (c.match(/[a-zA-Z]/)) alpha = true;
+                newStory += c;
+                if (alpha && c.match(/\s/)) break;
+              }
+              setLockedString(newStory);
+              console.log(generated);
+              setStory(newStory);
+              setPaused(false);
+            }
+          }}
           sx={{ maxHeight: "100%" }}
           rows={30}
         />
