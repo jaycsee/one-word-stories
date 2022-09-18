@@ -1,7 +1,10 @@
+<<<<<<< HEAD
 /* Sources: https://www.literacyshed.com/the-story-starter-shed.html
 https://www.journalbuddies.com/creative-writing-2/story-starter-sentences/
 https://www.helpingwritersbecomeauthors.com/boring-opening-lines/
 */
+=======
+>>>>>>> ui
 function genericRandomStarter() {
   // Returns a rarndom 'generic' story starter
   const genericWords = [
@@ -11,8 +14,13 @@ function genericRandomStarter() {
     "No, ",
     "It was a bright and sunny day. ",
     "It was a dark and gloomy day. ",
+<<<<<<< HEAD
     "The grocery store was busy today. ",
     "It was a bright, frosty morning. ",
+=======
+    "Ingrid had just turned thirteen. ",
+    "The grocery store was busy today. ",
+>>>>>>> ui
   ];
   let max = genericWords.length - 1;
   let min = 0;
