@@ -1,26 +1,20 @@
-import {
-  Box,
-  TextField,
-  Button,
-  styled,
-  Slider,
-  Typography,
-  Grid,
-  Stack,
-} from "@mui/material";
-import MuiInput from "@mui/material/Input";
-import React, { useState } from "react";
+import { Box, TextField, Stack } from "@mui/material";
+import { useState } from "react";
 import Settings, { ResetButton, InspirationButton } from "./Settings";
 
 import generate from "./Cohere";
+import createRandomStarter from "./randomStarter";
 
 function App() {
-  const [story, setStory] = useState("Once upon a time ");
+  const [story, setStory] = useState(createRandomStarter("spicy"));
   const [paused, setPaused] = useState(false);
   const [lockedString, setLockedString] = useState("");
 
   const [words, setWords] = useState(1);
-  const resetStory = () => setStory("");
+  const resetStory = () => {
+    setStory(createRandomStarter("spicy"));
+    setLockedString("");
+  };
 
   return (
     <Box
@@ -31,10 +25,25 @@ function App() {
       <Box>
         <h1>one word stories</h1>
       </Box>
-      <Box sx={{ width: "40rem", pt: 1, px: 3 }}>
+      <Box sx={{ width: "25rem", pt: 1, px: 3 }}>
         <TextField fullWidth placeholder="API Key" size="small" />
       </Box>
-      <Settings words={words} setWords={setWords} />
+      <Box
+        display="flex"
+        flexDirection="row"
+        alignItems="center"
+        sx={{ px: 3, py: 2 }}
+      >
+        <Box sx={{ mx: 1 }}>
+          <Settings words={words} setWords={setWords} />
+        </Box>
+        <Box sx={{ mx: 1 }}>
+          <ResetButton onClick={() => resetStory()} />
+        </Box>
+        <Box sx={{ mx: 1 }}>
+          <InspirationButton onClick={() => {}} />
+        </Box>
+      </Box>
       <Box flexGrow={1} sx={{ pt: 2, px: 3 }}>
         <TextField
           fullWidth
@@ -69,10 +78,6 @@ function App() {
           rows={30}
         />
       </Box>
-      <Stack spacing={2} direction="row">
-        <ResetButton onClick={() => resetStory()} />
-        <InspirationButton />
-      </Stack>
     </Box>
   );
 }

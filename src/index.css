@@ -1,13 +1,12 @@
 body {
   padding: 0;
   margin: 0;
-  background-image: url("EvenMoreNorthernLights.jpg");
+  /* background-image: url("EvenMoreNorthernLights.jpg"); */
 }
 
-
 h1 {
-  color:lightblue;
+  color: lightblue;
   text-align: center;
-  font-family: 'Comic Sans MS';
+  font-family: "Comic Sans MS";
   font-size: 40px;
 }
