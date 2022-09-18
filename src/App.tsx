@@ -4,17 +4,21 @@ import {
   Stack,
   FormControlLabel,
   Switch,
+  CircularProgress,
+  createTheme,
+  ThemeProvider
 } from "@mui/material";
 import { useState } from "react";
 import Settings, { InspirationButton, ResetButton } from "./Settings";
 
 import generate from "./Cohere";
 import createRandomStarter from "./randomStarter";
+import randomColor from "randomcolor";
 
 function App() {
   const [story, setStory] = useState(createRandomStarter("spicy"));
   const [paused, setPaused] = useState(false);
-  const [lockedString, setLockedString] = useState("");
+  const [lockedString, setLockedString] = useState(story);
 
   const [words, setWords] = useState(1);
   const resetStory = () => {
@@ -29,6 +33,13 @@ function App() {
   );
 
   const [spicy, setSpicy] = useState(true)
+  const [switchColor, setSwitchColor] = useState(randomColor());
+  const [trackColor, setTrackColor] = useState(randomColor());
+  const changeSpicyColor = () => {
+    setSwitchColor(randomColor());
+    setTrackColor(randomColor());
+    setSpicy(!spicy);
+  }
 
   const [cachedString, setCachedString] = useState("");
 
@@ -38,7 +49,9 @@ function App() {
     return ans;
   };
 
+  const [loading, setLoading] = useState(false);
   const needInspiration = async () => {
+    setLoading(true);
     if (paused) return;
     setPaused(true);
 
@@ -65,37 +78,31 @@ function App() {
     setLockedString(newStory);
     setStory(newStory);
     setPaused(false);
-
-    console.log({ newStory, x: cache.substring(generatedLength) })
-
-
-
-    // if (remainingWords > words) {
-
-    // }
-    // setPaused(true);
-    // const generated = await generate(
-    //   event?.target.value.trim(),
-    //   apiKey,
-    //   words + 5
-    // );
-    // let newStory = story;
-    // let alpha = false;
-    // let processed = 0;
-    // let generatedLength = 0;
-    // for (const c of generated) {
-    //   generatedLength++;
-    //   if (c.match(/[a-zA-Z]/)) alpha = true;
-    //   newStory += c;
-    //   if (alpha && c.match(/\s/)) processed++;
-    //   if (processed === words) break;
-    // }
-    // setCachedString(generated.substring(generatedLength - 1));
-    // console.log(generated.substring(generatedLength - 1));
-    // setLockedString(newStory);
-    // setStory(newStory);
-    // setPaused(false);
+    setLoading(false);
   }
+
+  const theme = createTheme({
+    components: {
+      MuiSwitch: {
+        styleOverrides: {
+          switchBase: {
+            color: "808080"
+          },
+          colorPrimary: {
+            "&.Mui-checked": {
+              color: switchColor
+            }
+          },
+          track: {
+            backgroundColor: "808080",
+            ".Mui-checked.Mui-checked + &": {
+              backgroundColor: trackColor
+            }
+          }
+        }
+      },
+    }
+  });
 
   return (
     <Box
@@ -124,30 +131,35 @@ function App() {
         alignItems="center"
         sx={{ px: 3, py: 2 }}
       >
-        <Box sx={{ mx: 1 }}>
+        <Box sx={{ mx: 2 }}>
           <Settings words={words} setWords={setWords} />
         </Box>
-        <Box sx={{ mx: 1 }}>
-          <FormControlLabel
-            sx={{
-              display: 'block',
-            }}
-            control={
-              <Switch
-                checked={spicy}
-                onChange={() => setSpicy(!spicy)}
-                name="loading"
-                color="primary"
-              />
-            }
-            label="Spicy"
-          />
+        <Box sx={{ mx: 5 }}>
+          <ThemeProvider theme={theme}>
+            <FormControlLabel
+              sx={{
+                display: 'block',
+              }}
+              control={
+                <Switch
+                  checked={spicy}
+                  onChange={() => changeSpicyColor()}
+                  name="loading"
+                  color="primary"
+                />
+              }
+              label="Spicy"
+            />
+          </ThemeProvider>
         </Box>
-        <Box sx={{ mx: 1 }}>
+        <Box sx={{ mx: 2 }}>
           <ResetButton onClick={() => resetStory()} />
         </Box>
-        <Box sx={{ mx: 1 }}>
+        <Box sx={{ mx: 2 }}>
           <InspirationButton onClick={() => needInspiration()} />
+        </Box>
+        <Box sx={{ mx: 2 }}>
+          {loading && <CircularProgress />}
         </Box>
       </Box>
       <Box flexGrow={1} sx={{ pt: 2, px: 3 }}>
@@ -161,13 +173,12 @@ function App() {
             const newValue = event.target.value;
             if (!newValue.startsWith(lockedString)) return;
 
-            if (lockedString === "") setLockedString(story);
-
             setStory(newValue);
             if (
               newValue.endsWith(" ") &&
               numWords(lockedString) + words === numWords(newValue)
             ) {
+              setLoading(true);
               setPaused(true);
               const generated = await generate(
                 newValue.trim(),
@@ -190,6 +201,7 @@ function App() {
               setLockedString(newStory);
               setStory(newStory);
               setPaused(false);
+              setLoading(false);
             }
           }}
           sx={{ maxHeight: "100%" }}
