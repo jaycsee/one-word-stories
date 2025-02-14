@@ -1,7 +1,6 @@
 import {
   Box,
   TextField,
-  Stack,
   FormControlLabel,
   Switch,
   CircularProgress,
@@ -20,6 +19,8 @@ function App() {
   const [paused, setPaused] = useState(false);
   const [lockedString, setLockedString] = useState(story);
 
+  const apiKey = process.env.REACT_APP_API_KEY ? process.env.REACT_APP_API_KEY : "hi";
+
   const [words, setWords] = useState(1);
   const resetStory = () => {
     if (spicy) {
@@ -27,10 +28,6 @@ function App() {
     } else setStory(createRandomStarter("generic"))
     setLockedString("");
   };
-
-  const [apiKey, setApiKey] = useState(
-    localStorage.getItem("cohereAPIKey") ?? ""
-  );
 
   const [spicy, setSpicy] = useState(true)
   const [switchColor, setSwitchColor] = useState(randomColor());
@@ -114,16 +111,6 @@ function App() {
         <h1>one word stories</h1>
       </Box>
       <Box sx={{ width: "25rem", pt: 1, px: 3 }}>
-        <TextField
-          fullWidth
-          placeholder="API Key"
-          size="small"
-          value={apiKey}
-          onChange={(event) => {
-            setApiKey(event?.target.value ?? "");
-            localStorage.setItem("cohereAPIKey", event.target.value);
-          }}
-        />
       </Box>
       <Box
         display="flex"
